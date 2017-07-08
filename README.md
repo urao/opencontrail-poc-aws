@@ -7,7 +7,7 @@ Pre-requisties:
 --------------
 0) AWS account
 1) On host from where these scripts will be executed, install the below packages
-	a) apt-get -y python-pip ansible git awscli
+	a) apt-get -y install python-pip ansible git awscli
 2)Configure, aws with credentials, access_key and secret_access_key
 
 
