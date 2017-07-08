@@ -9,7 +9,7 @@
     },
     {
         "ParameterKey": "CCInstanceType",
-        "ParameterValue": "t2.micro"
+        "ParameterValue": "t2.2xlarge"
     },
     {
         "ParameterKey": "CCName1",
@@ -25,6 +25,6 @@
     },
     {
         "ParameterKey": "SSHKey",
-        "ParameterValue": "contrail"
+        "ParameterValue": "ocontrail"
     }
 ]
