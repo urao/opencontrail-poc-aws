@@ -15,7 +15,7 @@ Pre-requisties:
 Steps:
 ------
 0) Git clone the repo
-1) Copy the opencontrail package in image folder
+1) Copy the opencontrail package under files folder
 2) Populate contrail-parameters.json file with required values, refer to sample file
 3) Run ./create_contrail_vms.sh [Create 2 EC2 instances with Ubuntu 14.04.4]
 4) RUn ./populate_cluster_config.sh [Populate cluster information to run contrail deployment]
