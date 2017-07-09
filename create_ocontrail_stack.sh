@@ -23,8 +23,8 @@ echo "Creating opencontrail stack($stackname) for POC\n"
 aws cloudformation create-stack \
     --stack-name $stackname  \
     --capabilities="CAPABILITY_IAM" \
-    --template-body file://cloudformation/$templatefile.json \
-    --parameters file://cloudformation/$parametersfile.json
+    --template-body file://cloudformation/contrail/$templatefile.json \
+    --parameters file://cloudformation/contrail/$parametersfile.json
 
 echo "Wait till the stack($stackname) is created\n"
 aws cloudformation wait stack-create-complete --stack-name $stackname && aws cloudformation describe-stacks --stack-name $stackname
