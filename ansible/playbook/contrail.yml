@@ -3,41 +3,73 @@
   hosts: all
   remote_user: root
 
-  # docker_required is set to true if the node is running atleast one of
-  # contrail-controller, contrail-analytics, contrail-analyticsdb, contrail-lb,
-  # contrail-compute in 'container' mode.
+  #nothing to do in common in both the nodes as of now hence skipping
 
 - name: Setup compute node 
   hosts: compute01
+  remote_user: root
+  become: true
   tasks:
     - name: Set compute hostname
-      command: "hostnamectl set-hostname compute01"
-      command: "echo 127.0.0.1 >> /etc/hosts"
-    - package : name=ntp state=present
-    - copy: src=files/ntp.conf dest=/etc/ntp.conf
-    - service: name=ntp state=restarted      
+      command: "{{item}}"
+      with_items:
+       - hostname compute01
+       - sed -i 's/baseubuntu/compute01/' /etc/hosts
+       - sed -i 's/baseubuntu/compute01/' /etc/hostname
+    - name: Populate hosts file
+      shell: printf '127.0.0.1  compute01\n' >> /etc/hosts
 
-- name: Setup contrail controller node
+- name: Setup contrail controller node and deploy contrail packages
   hosts: contrailc
+  remote_user: root
+  become: true
   tasks:
     - name: Set cc node hostname
-      command: "hostnamectl set-hostname contrailc"
-      command: "echo 127.0.0.1 >> /etc/hosts"
-    - package : name=ntp state=present
-    - copy: src=../files/ntp.conf dest=/etc/ntp.conf
-    - service: name=ntp state=restarted      
-    - copy: src=../files/{{ contrail_package }} dest=/root/{{ contrail_package }}
-    - name: install contrail dep package
+      command: "{{item}}"
+      with_items:
+       - hostname contrailc
+       - sed -i 's/baseubuntu/contrailc/' /etc/hosts
+       - sed -i 's/baseubuntu/contrailc/' /etc/hostname
+    - name: Populate hosts file
+      shell: printf '127.0.0.1  contrailc\n' >> /etc/hosts
+    - name: Copy contrail packages onto contrail controller node
+      copy: src=../files/{{ contrail_package }} dest=/root/{{ contrail_package }}
+    - name: Unpack contrail debian package
       command: "dpkg -i {{ contrail_package }}"
-    - name: setup contrail package
+    - name: Setup contrail package
       command: "/opt/contrail/contrail_packages/setup.sh"
-    - copy: src=../files/testbed_single.py dest=/opt/contrail/utils/fabfile/testbeds/testbed.py
-    - command: fab install_pkg_all:/root/{{ contrail_package }}
+    - name: Copy testbed.py file to dest folder
+      copy: src=../files/testbed_single.py dest=/opt/contrail/utils/fabfile/testbeds/testbed.py
+    - name: Run fab install packages
+      command: fab install_pkg_all:/root/{{ contrail_package }}
       args:
         chdir: /opt/contrail/utils
-    - command: fab install_contrail:reboot='False'
+    - name: Run fab install contrail packages
+      command: fab install_contrail:reboot='False'
       args:
         chdir: /opt/contrail/utils
-    - command: fab setup_all:reboot='False'
+    - name: Run fab setup_all contrail packages
+      command: fab setup_all:reboot='False'
       args:
         chdir: /opt/contrail/utils
+
+- name: Reboot compute node 
+  hosts: compute01
+  remote_user: root
+  become: true
+  tasks:
+    - name: Modify nova-compute config file
+      command: sed -i 's/kvm/qemu/' /etc/nova/nova-compute.conf
+    - service:
+      name: nova-compute
+      state: restarted
+  post_tasks:
+    - name: Reboot node
+      shell: sleep 15 && shutdown -r now "rebooting compute node"
+      async: 20
+      poll: 0
+      sudo: true
+      ignore_errors: true
+    - name: Waiting for compute node to come back
+      local_action: wait_for port=22 host={{ inventory_hostname }} state=started delay=30 timeout=240
+      sudo: false

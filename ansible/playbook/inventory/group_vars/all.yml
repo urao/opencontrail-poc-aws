@@ -3,10 +3,10 @@
 ##
 
 # ansible connection details
-
 ansible_user: root
 ansible_connection: ssh
 ansible_ssh_pass: c0ntrail123
+host_key_checking: false
 
 ###################################################
 # Common settings for contrail
