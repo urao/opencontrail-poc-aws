@@ -5,7 +5,7 @@
     },
     {
         "ParameterKey": "CCAMI",
-        "ParameterValue": "ami-835b4efa"
+        "ParameterValue": "ami-b2148dd2"
     },
     {
         "ParameterKey": "CCInstanceType",
@@ -21,7 +21,7 @@
     },
     {
         "ParameterKey": "InstanceCount",
-        "ParameterValue": "1"
+        "ParameterValue": "2"
     },
     {
         "ParameterKey": "SSHKey",

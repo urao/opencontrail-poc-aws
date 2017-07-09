@@ -65,6 +65,7 @@
             }
         },
         "ComputePrivateIP": {
+            "Condition": "Launch2",
             "Description": "Compute node (eth0) Private IP Address",
             "Value": {
                 "Fn::GetAtt": [
@@ -74,6 +75,7 @@
             }
         },
         "ComputePublicIP": {
+            "Condition": "Launch2",
             "Description": "Compute node EIP Address",
             "Value": {
                 "Fn::GetAtt": [

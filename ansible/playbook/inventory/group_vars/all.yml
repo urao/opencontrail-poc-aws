@@ -1,0 +1,16 @@
+###################################################
+# Ansible specific vars
+##
+
+# ansible connection details
+
+ansible_user: root
+ansible_connection: ssh
+ansible_ssh_pass: c0ntrail123
+
+###################################################
+# Common settings for contrail
+##
+
+# contrail package
+contrail_package: contrail-install-packages_3.2.2.0-33mitaka_all.deb

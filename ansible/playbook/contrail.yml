@@ -1,0 +1,43 @@
+---
+- name: Common system settings on all the hosts
+  hosts: all
+  remote_user: root
+
+  # docker_required is set to true if the node is running atleast one of
+  # contrail-controller, contrail-analytics, contrail-analyticsdb, contrail-lb,
+  # contrail-compute in 'container' mode.
+
+- name: Setup compute node 
+  hosts: compute01
+  tasks:
+    - name: Set compute hostname
+      command: "hostnamectl set-hostname compute01"
+      command: "echo 127.0.0.1 >> /etc/hosts"
+    - package : name=ntp state=present
+    - copy: src=files/ntp.conf dest=/etc/ntp.conf
+    - service: name=ntp state=restarted      
+
+- name: Setup contrail controller node
+  hosts: contrailc
+  tasks:
+    - name: Set cc node hostname
+      command: "hostnamectl set-hostname contrailc"
+      command: "echo 127.0.0.1 >> /etc/hosts"
+    - package : name=ntp state=present
+    - copy: src=../files/ntp.conf dest=/etc/ntp.conf
+    - service: name=ntp state=restarted      
+    - copy: src=../files/{{ contrail_package }} dest=/root/{{ contrail_package }}
+    - name: install contrail dep package
+      command: "dpkg -i {{ contrail_package }}"
+    - name: setup contrail package
+      command: "/opt/contrail/contrail_packages/setup.sh"
+    - template: src=../templates/testbed_single.py.j2 dest=/opt/contrail/utils/fabfile/testbeds/testbed.py
+    - command: fab install_pkg_all:/root/{{ contrail_package }}
+      args:
+        chdir: /opt/contrail/utils
+    - command: fab install_contrail:reboot='False'
+      args:
+        chdir: /opt/contrail/utils
+    - command: fab setup_all:reboot='False'
+      args:
+        chdir: /opt/contrail/utils

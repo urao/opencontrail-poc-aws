@@ -15,14 +15,17 @@ if [ -z "$templatefile" ]; then
     exit 1
 fi
 
-if [ -z "$parameterfile" ]; then
-    echo "parameter file not set"
+if [ -z "$parametersfile" ]; then
+    echo "parameters file not set"
     exit 1
 fi
-echo "Creating opencontrail $stackname stack for POC"
+echo "Creating opencontrail stack($stackname) for POC\n"
 
 aws cloudformation create-stack \
     --stack-name $stackname  \
     --capabilities="CAPABILITY_IAM" \
-    --template-body file://./cloudformation/$templatefile.json \
-    --parameters file://./cloudformation/$parametersfile.json
+    --template-body file://cloudformation/$templatefile.json \
+    --parameters file://cloudformation/$parametersfile.json
+
+echo "Wait till the stack($stackname) is created\n"
+aws cloudformation wait stack-create-complete --stack-name $stackname && aws cloudformation describe-stacks --stack-name $stackname
