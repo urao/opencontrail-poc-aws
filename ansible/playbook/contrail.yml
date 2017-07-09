@@ -31,7 +31,7 @@
       command: "dpkg -i {{ contrail_package }}"
     - name: setup contrail package
       command: "/opt/contrail/contrail_packages/setup.sh"
-    - template: src=../templates/testbed_single.py.j2 dest=/opt/contrail/utils/fabfile/testbeds/testbed.py
+    - copy: src=../files/testbed_single.py dest=/opt/contrail/utils/fabfile/testbeds/testbed.py
     - command: fab install_pkg_all:/root/{{ contrail_package }}
       args:
         chdir: /opt/contrail/utils
