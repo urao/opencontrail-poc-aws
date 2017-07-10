@@ -4,24 +4,32 @@
         "ParameterValue": "us-west-2a"
     },
     {
-        "ParameterKey": "CCAMI",
-        "ParameterValue": "ami-b2148dd2"
+        "ParameterKey": "LicenceModel",
+        "ParameterValue": "LicenseIncluded"
     },
     {
-        "ParameterKey": "CCInstanceType",
-        "ParameterValue": "t2.2xlarge"
+        "ParameterKey": "vMXInstanceType",
+        "ParameterValue": "m4.10xlarge"
     },
     {
-        "ParameterKey": "CCName1",
-        "ParameterValue": "contrailc"
+        "ParameterKey": "vMXVPC",
+        "ParameterValue": "vpc-*****"
     },
     {
-        "ParameterKey": "CCName2",
-        "ParameterValue": "compute01"
+        "ParameterKey": "vMXSubnet1",
+        "ParameterValue": "subnet-****"
     },
     {
-        "ParameterKey": "InstanceCount",
-        "ParameterValue": "2"
+        "ParameterKey": "vMXSubnet2",
+        "ParameterValue": "subnet-****"
+    },
+    {
+        "ParameterKey": "vMXSecGrp",
+        "ParameterValue": "sg-****"
+    },
+    {
+        "ParameterKey": "vMXName",
+        "ParameterValue": "vMX001"
     },
     {
         "ParameterKey": "SSHKey",
