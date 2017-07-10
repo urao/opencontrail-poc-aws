@@ -1,5 +1,15 @@
 {
     "AWSTemplateFormatVersion": "2010-09-09",
+    "Conditions": {
+        "cndvmxInt1EIP": {
+            "Fn::Equals": [
+                {
+                    "Ref": "Int1EIP"
+                },
+                "Yes"
+            ]
+        }
+    },
     "Description": "CloudFormation template to create vMX with 2 interfaces",
     "Mappings": {
         "vMXAMI": {
@@ -53,6 +63,88 @@
             }
         }
     },
+    "Metadata": {
+        "AWS::CloudFormation::Interface": {
+            "ParameterGroups": [
+                {
+                    "Label": {
+                        "default": "Juniper vMX Configuration"
+                    },
+                    "Parameters": [
+                        "vMXName",
+                        "vMXInstanceType",
+                        "SSHKey",
+                        "LicenseModel",
+                        "Int1EIP"
+                    ]
+                },
+                {
+                    "Label": {
+                        "default": "Network Configuration"
+                    },
+                    "Parameters": [
+                        "vMXVPC",
+                        "vMXSubnet1",
+                        "vMXSubnet2",
+                        "vMXSecGrp"
+                    ]
+                }
+            ],
+            "ParameterLabels": {
+                "LicenseModel": {
+                    "default": "License Model"
+                },
+                "SSHKey": {
+                    "default": "SSH Key"
+                },
+                "vMXInstanceType": {
+                    "default": "vMX Throughput Requirements"
+                },
+                "vMXSecGrp": {
+                    "default": "Security Group to assign to the vMX Instance"
+                },
+                "vMXSubnet1": {
+                    "default": "vMX Management Network"
+                },
+                "vMXSubnet2": {
+                    "default": "Subnet to assign ge-0/0/0"
+                },
+                "vMXVPC": {
+                    "default": "VPC to launch the vMX instance"
+                }
+            }
+        }
+    },
+    "Outputs": {
+        "vMXInt1EIP": {
+            "Condition": "cndvmxInt1EIP",
+            "Description": "Mgmt (fxp0) EIP Address for vMX",
+            "Value": {
+                "Fn::GetAtt": [
+                    "vMX",
+                    "PublicIp"
+                ]
+            }
+        },
+        "vMXInt1IP": {
+            "Description": "Mgmt (fxp0) Private IP Address for vMX",
+            "Value": {
+                "Fn::GetAtt": [
+                    "vMXInt1",
+                    "PrimaryPrivateIpAddress"
+                ]
+            }
+        },
+        "vMXge000Intaddr": {
+            "Description": "ge-0/0/0 IP address",
+            "Value": {
+                "Fn::GetAtt": [
+                    "vMXInt2",
+                    "PrimaryPrivateIpAddress"
+                ]
+            }
+        }
+    },
     "Parameters": {
         "AvailZone": {
             "Description": "Choose the Availability Zone to launch vMX instance",
@@ -102,6 +194,11 @@
             "MaxLength": "16",
             "Type": "String"
         },
+        "vMXSecGrp": {
+            "Default": "sg-******",
+            "Description": "Select the Security Group to apply to vMX instance",
+            "Type": "AWS::EC2::SecurityGroup::Id"
+        },
         "vMXSubnet1": {
             "Default": "",
             "Description": "Subnet where the mgmt interface will get ip address",
@@ -118,14 +215,48 @@
         }
     },
     "Resources": {
-        "vMX": {
-            "DisableAPiTermination": {
-                "Fn::If": [
-                    "cndEnableTerm",
-                    true,
-                    false
-                ]
+        "AssociateEIP1Int1": {
+            "Condition": "cndvmxInt1EIP",
+            "Properties": {
+                "AllocationId": {
+                    "Fn::GetAtt": [
+                        "vMXEIPInt1",
+                        "AllocationId"
+                    ]
+                },
+                "NetworkInterfaceId": {
+                    "Ref": "vMXInt1"
+                },
+                "PrivateIpAddress": {
+                    "Fn::GetAtt": [
+                        "vMXInt1",
+                        "PrimaryPrivateIpAddress"
+                    ]
+                }
             },
+            "Type": "AWS::EC2::EIPAssociation"
+        },
+        "AssociateEIP2Int2": {
+            "Properties": {
+                "AllocationId": {
+                    "Fn::GetAtt": [
+                        "vMXEIPInt2",
+                        "AllocationId"
+                    ]
+                },
+                "NetworkInterfaceId": {
+                    "Ref": "vMXInt2"
+                },
+                "PrivateIpAddress": {
+                    "Fn::GetAtt": [
+                        "vMXInt2",
+                        "PrimaryPrivateIpAddress"
+                    ]
+                }
+            },
+            "Type": "AWS::EC2::EIPAssociation"
+        },
+        "vMX": {
             "Properties": {
                 "AvailabilityZone": {
                     "Ref": "AvailZone"
@@ -151,13 +282,13 @@
                     {
                         "DeviceIndex": "0",
                         "NetworkInterfaceId": {
-                            "Ref": "vMXSubnet1"
+                            "Ref": "vMXInt1"
                         }
                     },
                     {
                         "DeviceIndex": "1",
                         "NetworkInterfaceId": {
-                            "Ref": "vMXSubnet2"
+                            "Ref": "vMXInt2"
                         }
                     }
                 ],
@@ -172,6 +303,21 @@
             },
             "Type": "AWS::EC2::Instance"
         },
+        "vMXEIPInt1": {
+            "Condition": "cndvmxInt1EIP",
+            "Metadata": {},
+            "Properties": {
+                "Domain": "vpc"
+            },
+            "Type": "AWS::EC2::EIP"
+        },
+        "vMXEIPInt2": {
+            "Metadata": {},
+            "Properties": {
+                "Domain": "vpc"
+            },
+            "Type": "AWS::EC2::EIP"
+        },
         "vMXInt1": {
             "Metadata": {},
             "Properties": {
@@ -181,15 +327,6 @@
                         "Ref": "vMXSecGrp"
                     }
                 ],
-                "SecondaryPrivateIpAddressCount": {
-                    "Fn::If": [
-                        "cndvmxtshoot",
-                        "1",
-                        {
-                            "Ref": "AWS::NoValue"
-                        }
-                    ]
-                },
                 "SourceDestCheck": "false",
                 "SubnetId": {
                     "Ref": "vMXSubnet1"

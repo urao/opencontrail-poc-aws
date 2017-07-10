@@ -4,7 +4,7 @@
         "ParameterValue": "us-west-2a"
     },
     {
-        "ParameterKey": "LicenceModel",
+        "ParameterKey": "LicenseModel",
         "ParameterValue": "LicenseIncluded"
     },
     {
@@ -13,19 +13,19 @@
     },
     {
         "ParameterKey": "vMXVPC",
-        "ParameterValue": "vpc-*****"
+        "ParameterValue": "vpc-805d9ce6"
     },
     {
         "ParameterKey": "vMXSubnet1",
-        "ParameterValue": "subnet-****"
+        "ParameterValue": "subnet-eac0f7a3"
     },
     {
         "ParameterKey": "vMXSubnet2",
-        "ParameterValue": "subnet-****"
+        "ParameterValue": "subnet-de774397"
     },
     {
         "ParameterKey": "vMXSecGrp",
-        "ParameterValue": "sg-****"
+        "ParameterValue": "sg-90ff29ea"
     },
     {
         "ParameterKey": "vMXName",
