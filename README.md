@@ -1,5 +1,5 @@
 # opencontrail-poc-aws
-Deploy opencontrail cloud[1 contrail controller, 1 compute] as POC on AWS
+Deploy opencontrail cloud on Ubuntu 14.04 OS [1 contrail controller, 1 compute] as POC on AWS
 
 Steps to deploy this opencontrail cloud on AWS
 
