@@ -33,7 +33,7 @@ Steps to deploy contrail cloud:
 Delete contrail cloud stack:
 ---------------------------
 1. Run, ./delete_ocontrail_stack.sh <stack_name>
-
+2. Run, ./delete_keypair.sh
 
 
 Steps to deploy vMX stack:

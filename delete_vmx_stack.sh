@@ -7,10 +7,11 @@ if [ -z "$stackname" ]; then
     exit 1
 fi
 
-echo "Deleting opencontrail $stackname stack for POC"
+echo "Deleting vMX $stackname stack for POC"
 
 aws cloudformation delete-stack --stack-name $stackname 
 
 
-echo "Wait till opencontrail stack($stackname) is deleted\n"
+echo "Wait till the vMX stack($stackname) is deleted\n"
 aws cloudformation wait stack-delete-complete --stack-name $stackname && aws cloudformation describe-stacks --stack-name $stackname
+
