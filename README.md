@@ -36,5 +36,8 @@ Delete contrail cloud stack:
 2. Run, ./delete_keypair.sh
 
 
-Steps to deploy vMX stack:
--------------------------
+Steps to deploy vMX stack in an existing VPC:
+--------------------------------------------
+1. Populate vmx-parameters.json file with required values, refer to sample file
+2. Create vMX instance
+   1. Run ./create_vmx_stack.sh <stack-name> vmx vmx-parameters
