@@ -25,7 +25,7 @@ Steps to deploy contrail cloud:
 8. Verify cloudformation stack and populate cluster information to run deploy contrail
    1. Run ./verify_ocontrail_stack.sh <stack-name>
 9. Modify contrail package name in ansible/playbook/inventory/group_vars/all.yml
-10. Run ansible playbook to deploy Opencontrail Cloud
+10. Run ansible playbook to deploy opencontrail cloud
    1. Change directory 'cd ansible/playbook'
    2. Run 'ansible-playbook -i inventory/ contrail.yml' 
 11. Connect to contrail-webui, using public ip address of contrailc EC2 instance
