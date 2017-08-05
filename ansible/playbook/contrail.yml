@@ -2,10 +2,10 @@
 - name: Common system settings on all the hosts
   hosts: all
   remote_user: root
-
   #nothing to do in common in both the nodes as of now hence skipping
+
 - name: Setup compute node 
-  hosts: compute01
+  hosts: {{ computehostname }}
   remote_user: root
   become: true
   tasks:
@@ -13,13 +13,13 @@
       command: "{{item}}"
       with_items:
        - hostname compute01
-       - sed -i 's/baseubuntu/compute01/' /etc/hosts
-       - sed -i 's/baseubuntu/compute01/' /etc/hostname
+       - sed -i 's/baseubuntu/{{ computehostname }}/' /etc/hosts
+       - sed -i 's/baseubuntu/{{ computehostname }}/' /etc/hostname
     - name: Populate hosts file
-      shell: printf '127.0.0.1  compute01\n' >> /etc/hosts
+      shell: printf '127.0.0.1  {{ computehostname }}\n' >> /etc/hosts
 
 - name: Setup contrail controller node and deploy contrail packages
-  hosts: contrailc
+  hosts: {{ ctrlhostname }}
   remote_user: root
   become: true
   tasks:
@@ -27,10 +27,10 @@
       command: "{{item}}"
       with_items:
        - hostname contrailc
-       - sed -i 's/baseubuntu/contrailc/' /etc/hosts
-       - sed -i 's/baseubuntu/contrailc/' /etc/hostname
+       - sed -i 's/baseubuntu/{{ ctrlhostname }}/' /etc/hosts
+       - sed -i 's/baseubuntu/{{ ctrlhostname }}/' /etc/hostname
     - name: Populate hosts file
-      shell: printf '127.0.0.1  contrailc\n' >> /etc/hosts
+      shell: printf '127.0.0.1  {{ ctrlhostname }}\n' >> /etc/hosts
     - name: Copy contrail packages onto contrail controller node
       copy: src=../files/{{ contrail_package }} dest=/root/{{ contrail_package }}
     - name: Unpack contrail debian package
@@ -53,16 +53,12 @@
         chdir: /opt/contrail/utils
 
 - name: Reboot compute node 
-  hosts: compute01
+  hosts: {{ computehostname }}
   remote_user: root
   become: true
   tasks:
-    - name: Modify nova-compute config file
-      replace:
-        path: /etc/nova/nova-compute.conf
-        regexp: qemu
-        replace: kvm
-        backup: yes
+      - name: Copy nova-compute.conf file to dest folder
+      copy: src=../files/nova-compute.conf dest=/etc/nova/nova-compute.conf
     - name: Restart nova-compute service
       service:
        name: nova-compute
