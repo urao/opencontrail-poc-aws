@@ -1,7 +1,7 @@
 # opencontrail-poc-aws
 Deploy opencontrail cloud on Ubuntu 14.04 OS [1 contrail controller, 1 compute] as POC on AWS
 
-Steps to deploy this opencontrail cloud on AWS
+Steps to deploy opencontrail cloud on AWS
 
 Pre-requisties:
 --------------
@@ -18,16 +18,17 @@ Steps to deploy contrail cloud:
 3. Copy the opencontrail package under ansible/files folder
    1. Example, contrail-install-packages_3.2.2.0-33mitaka_all.deb
 4. Run ./create_keypair.sh [Create KeyPair]
-5. Populate contrail-parameters.json file with required values, refer to sample file
+5. Populate contrail-parameters.json file [cloudformation/contrail/] with required values, refer to sample file
 6. Create VPC, Subnet and 2 EC2 instances with host OS Ubuntu 14.04.4
    1. Run ./create_ocontrail_stack.sh <stack-name> ocontrail cstack-parameters
-7. Verify cloudformation stack and populate cluster information to run deploy contrail
+7. Wait for couple of minutes for EC2 instance to complete sanity checks, IP assignment etc.
+8. Verify cloudformation stack and populate cluster information to run deploy contrail
    1. Run ./verify_ocontrail_stack.sh <stack-name>
-8. Modify contrail package name in ansible/playbook/inventory/group_vars/all.yml
-9. Run ansible playbook to deploy Opencontrail Cloud
+9. Modify contrail package name in ansible/playbook/inventory/group_vars/all.yml
+10. Run ansible playbook to deploy Opencontrail Cloud
    1. Change directory 'cd ansible/playbook'
    2. Run 'ansible-playbook -i inventory/ contrail.yml' 
-10. Connect to contrail-webui, using public ip address of contrailc EC2 instance
+11. Connect to contrail-webui, using public ip address of contrailc EC2 instance
 
 
 Delete contrail cloud stack:
