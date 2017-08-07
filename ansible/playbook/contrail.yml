@@ -5,40 +5,40 @@
   #nothing to do in common in both the nodes as of now hence skipping
 
 - name: Setup compute node 
-  hosts: {{ computehostname }}
+  hosts: compute
   remote_user: root
   become: true
   tasks:
     - name: Set compute hostname
       command: "{{item}}"
       with_items:
-       - hostname compute01
-       - sed -i 's/baseubuntu/{{ computehostname }}/' /etc/hosts
-       - sed -i 's/baseubuntu/{{ computehostname }}/' /etc/hostname
+       - hostname {{ computename }}
+       - sed -i 's/baseubuntu/{{ computename }}/' /etc/hosts
+       - sed -i 's/baseubuntu/{{ computename }}/' /etc/hostname
     - name: Populate hosts file
-      shell: printf '127.0.0.1  {{ computehostname }}\n' >> /etc/hosts
+      shell: printf '127.0.0.1  {{ computename }}\n' >> /etc/hosts
 
 - name: Setup contrail controller node and deploy contrail packages
-  hosts: {{ ctrlhostname }}
+  hosts: controller
   remote_user: root
   become: true
   tasks:
     - name: Set cc node hostname
       command: "{{item}}"
       with_items:
-       - hostname contrailc
-       - sed -i 's/baseubuntu/{{ ctrlhostname }}/' /etc/hosts
-       - sed -i 's/baseubuntu/{{ ctrlhostname }}/' /etc/hostname
+       - hostname {{ controllername }}
+       - sed -i 's/baseubuntu/{{ controllername }}/' /etc/hosts
+       - sed -i 's/baseubuntu/{{ controllername }}/' /etc/hostname
     - name: Populate hosts file
-      shell: printf '127.0.0.1  {{ ctrlhostname }}\n' >> /etc/hosts
+      shell: printf '127.0.0.1  {{ controllername }}\n' >> /etc/hosts
     - name: Copy contrail packages onto contrail controller node
       copy: src=../files/{{ contrail_package }} dest=/root/{{ contrail_package }}
     - name: Unpack contrail debian package
       command: "dpkg -i {{ contrail_package }}"
     - name: Setup contrail package
       command: "/opt/contrail/contrail_packages/setup.sh"
-    - name: Copy testbed.py file to dest folder
-      copy: src=../files/testbed_single.py dest=/opt/contrail/utils/fabfile/testbeds/testbed.py
+    - name: Copy jinja template to testbed.y
+      template: src=../files/testbed_single.j2 dest=/opt/contrail/utils/fabfile/testbeds/testbed.py
     - name: Run fab install packages
       command: fab install_pkg_all:/root/{{ contrail_package }}
       args:
@@ -53,11 +53,11 @@
         chdir: /opt/contrail/utils
 
 - name: Reboot compute node 
-  hosts: {{ computehostname }}
+  hosts: compute
   remote_user: root
   become: true
   tasks:
-      - name: Copy nova-compute.conf file to dest folder
+    - name: Copy nova-compute.conf file to dest folder
       copy: src=../files/nova-compute.conf dest=/etc/nova/nova-compute.conf
     - name: Restart nova-compute service
       service:

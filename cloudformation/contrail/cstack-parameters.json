@@ -13,11 +13,11 @@
     },
     {
         "ParameterKey": "CCName1",
-        "ParameterValue": "contrailc"
+        "ParameterValue": "cc1"
     },
     {
         "ParameterKey": "CCName2",
-        "ParameterValue": "compute01"
+        "ParameterValue": "compute1"
     },
     {
         "ParameterKey": "InstanceCount",
