@@ -37,7 +37,7 @@ env.passwords = {
 
 env.ostypes = {
         host1: 'ubuntu',
-        host2: 'ubuntu,
+        host2: 'ubuntu',
 }
 
 env.ntp_server = 'ntp.ubuntu.com'
