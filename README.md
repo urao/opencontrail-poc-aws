@@ -28,7 +28,7 @@ Steps to deploy contrail cloud:
 10. Run ansible playbook to deploy opencontrail cloud
    1. Change directory 'cd ansible/playbook'
    2. Run 'ansible-playbook -i inventory/ contrail.yml' 
-11. Connect to contrail-webui, using public ip address of contrailc EC2 instance
+11. Connect to contrail-webui, using public ip address of CCName1 EC2 instance
 
 
 Delete contrail cloud stack:
